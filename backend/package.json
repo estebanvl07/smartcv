@@ -1,8 +1,8 @@
 {
-  "name": "backend",
+  "name": "smartcv-api",
   "version": "1.0.0",
-  "main": "index.js",
   "type": "module",
+  "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
     "dev": "node --watch --watch-path=src src/index.js",
@@ -16,6 +16,7 @@
   "dependencies": {
     "@auth/prisma-adapter": "^2.7.4",
     "@prisma/client": "^6.3.1",
+    "cors": "^2.8.5",
     "express": "^4.21.2"
   },
   "devDependencies": {
