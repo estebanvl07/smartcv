@@ -1,0 +1,205 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// required models
+
+model User {
+  id            String          @id @default(cuid())
+  name          String?
+  email         String          @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  // Optional for WebAuthn support
+  Authenticator Authenticator[]
+  userPassword  UserPassword?
+  userVerificationCode  UserVerificationCode[]
+  cvs                   CVInfo[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+ 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+ 
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+ 
+  @@id([provider, providerAccountId])
+}
+ 
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+ 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model UserVerificationCode {
+  id        Int       @id @default(autoincrement())
+  token     String
+  type      Int // 1: activation, 2: recovery
+  userId    String
+  usedAt    DateTime?
+  expireAt  DateTime
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+ 
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+ 
+  @@id([identifier, token])
+}
+ 
+// Optional for WebAuthn support
+model Authenticator {
+  credentialID         String  @unique
+  userId               String
+  providerAccountId    String
+  credentialPublicKey  String
+  counter              Int
+  credentialDeviceType String
+  credentialBackedUp   Boolean
+  transports           String?
+ 
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+ 
+  @@id([userId, credentialID])
+}
+
+model CVExperience {
+  id Int  @id @default(autoincrement())
+  startDate DateTime
+  endDate DateTime?
+  
+  active  Boolean @default(false)
+  description String
+  companyName String
+}
+
+model CVTecSkills {
+  id Int @id  @default(autoincrement())
+  name String
+
+  cvId Int @unique
+  cv CVInfo @relation(fields: [cvId], references: [id], onDelete: Cascade)
+}
+
+model CVInterpersonalSkills {
+  id Int @id  @default(autoincrement())
+  name String
+
+  cvId Int @unique
+  cv CVInfo @relation(fields: [cvId], references: [id], onDelete: Cascade)
+
+}
+
+model CVLanguages {
+  id Int @id @default(autoincrement())
+  name  String
+
+  cvId Int
+  cv CVInfo @relation(fields: [cvId], references: [id], onDelete: Cascade)
+}
+model CVReferences {
+  id Int @id @default(autoincrement())
+  name  String
+  phone String
+  profession String?
+  
+  cvId Int
+  cv CVInfo @relation(fields: [cvId], references: [id], onDelete: Cascade)
+}
+
+model CVStudies {
+  id Int @id @default(autoincrement())
+  title String
+  institution String
+  startDate DateTime
+  endDate DateTime?
+  finished Boolean @default(true)
+  
+  cvId Int 
+  cv CVInfo @relation(fields: [cvId], references: [id], onDelete: Cascade)
+}
+
+model CVInfo {
+  id      Int @id @default(autoincrement())
+  userId  String
+  name    String
+  surname String
+  phone   Int
+  email   String
+  profession String
+  yearsOfExp String
+  profileDescription    String
+  age     Int?
+  address String?
+  web                   String?
+  
+  skills  CVTecSkills?
+  interperonsalSkills  CVInterpersonalSkills?
+  images  CVImages[]
+
+  studies  CVStudies[]
+  languages CVLanguages[]
+  references  CVReferences[]
+  
+  user    User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+}
+
+model Professions {
+  id Int @id @default(autoincrement())
+  prefessionName String
+  defaultProfile String
+}
+
+model UserPassword {
+  id Int @id @default(autoincrement())
+  password String
+
+  userId String @unique
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model CVImages {
+  id Int @id @default(autoincrement())
+  url String
+
+  cvId Int @unique
+  cv CVInfo @relation(fields: [cvId], references: [id], onDelete: Cascade)
+}
