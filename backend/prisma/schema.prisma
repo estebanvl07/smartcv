@@ -161,7 +161,7 @@ model CVInfo {
   userId  String
   name    String
   surname String
-  phone   Int
+  phone   String
   email   String
   profession String
   yearsOfExp String
@@ -184,7 +184,7 @@ model CVInfo {
 
 model Professions {
   id Int @id @default(autoincrement())
-  prefessionName String
+  professionName String
   defaultProfile String
 }
 
