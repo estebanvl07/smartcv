@@ -1,101 +1,83 @@
 import * as UserServices from "../services/user.service.js";
 
-export const getUserById = async(req, res, next) => {
+export const getUserById = async (req, res, next) => {
   try {
     const { id } = req.params;
 
     if (!id) {
-      return res.status(400).json({ error: "Id not found" }); // Se detiene la ejecución para evitar errores continuos
+      return res.status(400).json({ error: "ID no proporcionado" });
     }
 
-    const response = await UserServices.getUserById(id);
-    // Caso en el que el usuario no exista
-    if(!response){
-      return res.status(404).json({error: "user not found"}); //evitamos devolver Null o undefined
-    }
-    res.json(response);
+    const user = await UserServices.getUserById(id);
 
+    if (!user) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    }
+
+    res.json(user);
   } catch (error) {
     next(error);
   }
 };
 
-
 // Obtener todos los usuarios
-export const getAllUsers = async(req, res, next)=>{
-  try{
+export const getAllUsers = async (req, res, next) => {
+  try {
     const users = await UserServices.getAllUsers();
-
-    if(!users || users,length === 0){
-      return res.status(404).json({error: "No users found"});
-    }
-
     res.json(users);
-
-  }catch(error){
+  } catch (error) {
     next(error);
   }
-}
+};
 
 // Crear un usuario
 
-export const createUsers = async (req, res, next)=>{
-  try{
-    const  {name, email, password} = req.body;
+export const createUser = async (req, res, next) => {
+  try {
+    const userData = req.body;
 
-    if (!name || !email || !password){
-      return res.status(400).json({error: "Missing required fields"});
+    if (!userData.email) {
+      return res.status(400).json({ error: "El email es obligatorio" });
     }
 
-    const newUser = await UserServices.createUsers({name, email, password});
-
-    res.status(200).json(newUser);
-  }catch(error){
+    const newUser = await UserServices.createUser(userData);
+    res.status(201).json(newUser);
+  } catch (error) {
     next(error);
   }
-}
+};
 
 // Actualizar un usuario
 
-export const updateUsers = async (req, res, next)=>{
-  try{
-    const {id} = req.params;
-    const data  = req.body;
+export const updateUser = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const userData = req.body;
 
-    if(!id){
-      return res.status(400).json({error: "id not found"});
+    if (!id) {
+      return res.status(400).json({ error: "ID no proporcionado" });
     }
 
-    const updatedUser = await UserServices.updateUsers(id, data);
-
-    if(!updatedUser){
-      return res.status(404).json({error: "User not found"});
-    }
-
+    const updatedUser = await UserServices.updateUser(id, userData);
     res.json(updatedUser);
-  }catch(error){
+  } catch (error) {
     next(error);
   }
-}
+};
 
 // Eliminar Usuarios
 
-export const deleteUsers = async(req, res,next)=>{
-  try{
-    const {id} = req.params;
+export const deleteUser = async (req, res, next) => {
+  try {
+    const { id } = req.params;
 
-    if (!id){
-      return res.status(400).json({error:"Id not found"});
+    if (!id) {
+      return res.status(400).json({ error: "ID no proporcionado" });
     }
 
-    const deletedUser = await UserServices.deleteUsers(id);
-
-    if (!deletedUser){
-      return res.status(404).json({error: "User not found"});
-    }
-
-    res.json({Message:"User deleted successfully"});
-  }catch(error){
+    await UserServices.deleteUser(id);
+    res.json({ message: "Usuario eliminado correctamente" });
+  } catch (error) {
     next(error);
   }
-}
+};
