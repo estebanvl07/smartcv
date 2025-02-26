@@ -5,13 +5,13 @@ export const getUserById = async (req, res, next) => {
     const { id } = req.params;
 
     if (!id) {
-      return res.status(400).json({ error: "ID no proporcionado" });
+      return res.status(400).json({ error: "ID not found" });
     }
 
     const user = await UserServices.getUserById(id);
 
     if (!user) {
-      return res.status(404).json({ error: "Usuario no encontrado" });
+      return res.status(404).json({ error: "User not found" });
     }
 
     res.json(user);
@@ -37,7 +37,7 @@ export const createUser = async (req, res, next) => {
     const userData = req.body;
 
     if (!userData.email) {
-      return res.status(400).json({ error: "El email es obligatorio" });
+      return res.status(400).json({ error: "The email es required" });
     }
 
     const newUser = await UserServices.createUser(userData);
@@ -55,7 +55,7 @@ export const updateUser = async (req, res, next) => {
     const userData = req.body;
 
     if (!id) {
-      return res.status(400).json({ error: "ID no proporcionado" });
+      return res.status(400).json({ error: "ID not found" });
     }
 
     const updatedUser = await UserServices.updateUser(id, userData);
@@ -72,11 +72,11 @@ export const deleteUser = async (req, res, next) => {
     const { id } = req.params;
 
     if (!id) {
-      return res.status(400).json({ error: "ID no proporcionado" });
+      return res.status(400).json({ error: "ID not found" });
     }
 
     await UserServices.deleteUser(id);
-    res.json({ message: "Usuario eliminado correctamente" });
+    res.json({ message: "user successfully deleted" });
   } catch (error) {
     next(error);
   }
