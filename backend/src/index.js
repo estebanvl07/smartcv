@@ -3,6 +3,7 @@ import cors from "cors";
 import { PORT, FRONT_URL } from "./constants/config.js";
 import routes from "./routes/index.js";
 
+
 const app = express();
 
 const corsOptions = {
